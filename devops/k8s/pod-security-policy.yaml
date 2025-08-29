@@ -1,0 +1,68 @@
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: payment-psp
+  namespace: payment-system
+  labels:
+    security-tier: high
+    compliance: pci-dss
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+  readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: payment-service-account
+  namespace: payment-system
+  labels:
+    app: payment-api
+    security-tier: high
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: payment-system
+  name: payment-role
+  labels:
+    security-tier: high
+rules:
+- apiGroups: [""]
+  resources: ["secrets", "configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions", "policy"]
+  resources: ["podsecuritypolicies"]
+  verbs: ["use"]
+  resourceNames: ["payment-psp"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: payment-role-binding
+  namespace: payment-system
+  labels:
+    security-tier: high
+subjects:
+- kind: ServiceAccount
+  name: payment-service-account
+  namespace: payment-system
+roleRef:
+  kind: Role
+  name: payment-role
+  apiGroup: rbac.authorization.k8s.io

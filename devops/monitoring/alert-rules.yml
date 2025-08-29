@@ -1,0 +1,213 @@
+groups:
+  - name: payment-api-alerts
+    rules:
+      # High-priority alerts
+      - alert: PaymentAPIDown
+        expr: up{job="payment-api"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: payment-api
+          compliance: pci-dss
+        annotations:
+          summary: "Payment API is down"
+          description: "Payment API has been down for more than 30 seconds. This affects payment processing capabilities."
+          runbook_url: "https://wiki.company.com/runbooks/payment-api-down"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: payment-api
+          compliance: pci-dss
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+
+      - alert: DatabaseConnectionFailure
+        expr: payment_database_connections_active == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+          compliance: pci-dss
+        annotations:
+          summary: "Database connection failure"
+          description: "No active database connections detected"
+
+      # Security alerts
+      - alert: UnauthorizedAccessAttempts
+        expr: rate(http_requests_total{status="401"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: payment-api
+          security: true
+        annotations:
+          summary: "High rate of unauthorized access attempts"
+          description: "{{ $value }} unauthorized access attempts per second"
+
+      - alert: SSLCertificateExpiry
+        expr: ssl_certificate_expiry_seconds < 86400 * 30
+        for: 1h
+        labels:
+          severity: warning
+          service: ssl
+          security: true
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+
+      - alert: WebhookValidationFailures
+        expr: rate(webhook_validation_failures_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: payment-api
+          security: true
+        annotations:
+          summary: "High webhook validation failure rate"
+          description: "Webhook validation failing at {{ $value | humanizePercentage }} rate"
+
+      # Performance alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+          service: payment-api
+          performance: true
+        annotations:
+          summary: "High response time"
+          description: "95th percentile response time is {{ $value }}s"
+
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{pod=~"payment-api-.*"}[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          service: payment-api
+          resource: cpu
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }}"
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{pod=~"payment-api-.*"} / container_spec_memory_limit_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: payment-api
+          resource: memory
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      - alert: PodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+          service: payment-api
+        annotations:
+          summary: "Pod is crash looping"
+          description: "Pod {{ $labels.pod }} is restarting frequently"
+
+  - name: infrastructure-alerts
+    rules:
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache is unavailable"
+
+      - alert: DiskSpaceHigh
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is {{ $value | humanizePercentage }} full"
+
+      - alert: LoadBalancerDown
+        expr: up{job="blackbox"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: load-balancer
+        annotations:
+          summary: "Load balancer health check failing"
+          description: "External load balancer health check is failing"
+
+  - name: business-alerts
+    rules:
+      - alert: PaymentVolumeAnomalous
+        expr: |
+          (
+            rate(payment_transactions_total[1h]) 
+            < 
+            (rate(payment_transactions_total[1h] offset 24h) * 0.5)
+          )
+          and
+          rate(payment_transactions_total[1h]) < 10
+        for: 30m
+        labels:
+          severity: warning
+          service: payment-api
+          business: true
+        annotations:
+          summary: "Unusually low payment volume"
+          description: "Payment volume is significantly lower than expected"
+
+      - alert: HighPaymentFailureRate
+        expr: rate(payment_failures_total[10m]) / rate(payment_attempts_total[10m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: payment-api
+          business: true
+        annotations:
+          summary: "High payment failure rate"
+          description: "Payment failure rate is {{ $value | humanizePercentage }}"
+
+  - name: compliance-alerts
+    rules:
+      - alert: AuditLogFailure
+        expr: increase(audit_log_errors_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: audit
+          compliance: pci-dss
+        annotations:
+          summary: "Audit log failure detected"
+          description: "Audit logging is failing - compliance risk"
+
+      - alert: UnencryptedDataDetected
+        expr: unencrypted_data_access_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: payment-api
+          compliance: pci-dss
+        annotations:
+          summary: "Unencrypted data access detected"
+          description: "Potential unencrypted sensitive data access"
+
+      - alert: NetworkPolicyViolation
+        expr: increase(network_policy_violations_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: network
+          security: true
+        annotations:
+          summary: "Network policy violation"
+          description: "Network traffic violating security policies"

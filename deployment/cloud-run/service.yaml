@@ -1,0 +1,152 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: payment-backend
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+spec:
+  template:
+    metadata:
+      labels:
+        run.googleapis.com/startupProbeType: Default
+      annotations:
+        # Scaling configuration
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "10"
+        
+        # Resource allocation
+        run.googleapis.com/cpu-throttling: "false"
+        run.googleapis.com/memory: "512Mi"
+        run.googleapis.com/cpu: "1"
+        
+        # Security settings
+        run.googleapis.com/vpc-access-connector: payment-connector
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+        
+        # Execution environment
+        run.googleapis.com/execution-environment: gen2
+        
+        # Startup probe
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: payment-backend-sa
+      containers:
+      - name: payment-backend
+        image: gcr.io/PROJECT_ID/payment-backend:latest
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        # Database configuration
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8080"
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: db-host
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: db-password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: db-name
+        - name: DB_SOCKET_PATH
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: db-socket-path
+        
+        # Payment provider configuration
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: stripe-secret-key
+        - name: STRIPE_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: stripe-webhook-secret
+        - name: PAYSTACK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: paystack-secret-key
+        - name: PAYSTACK_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: paystack-webhook-secret
+        
+        # Application configuration
+        - name: FRONTEND_URL
+          value: "https://your-frontend-domain.com"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: jwt-secret
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: payment-secrets
+              key: encryption-key
+        
+        # Webhook URLs
+        - name: STRIPE_WEBHOOK_URL
+          value: "https://payment-backend-HASH-uc.a.run.app/webhooks/stripe"
+        - name: PAYSTACK_WEBHOOK_URL
+          value: "https://payment-backend-HASH-uc.a.run.app/webhooks/paystack"
+        
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+            
+        # Health checks
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+          
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3

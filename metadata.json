@@ -1,0 +1,5 @@
+{
+  "name": "Germany Immigration Consultation Booking",
+  "description": "A web application for booking 30-minute consultation appointments about immigrating to Germany. It includes a time scheduler, payment options via Stripe or Paystack, and WhatsApp integration for video calls.",
+  "requestFramePermissions": []
+}

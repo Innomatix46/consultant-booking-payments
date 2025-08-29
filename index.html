@@ -4,222 +4,475 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Germany Immigration Consultation Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-    /* Complete CSS for the consultation booking system */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Modern CSS for the consultation booking system */
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #3b82f6;
+      --secondary-color: #059669;
+      --accent-color: #7c3aed;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-light: #9ca3af;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --bg-tertiary: #f3f4f6;
+      --border-light: #e5e7eb;
+      --border-medium: #d1d5db;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
       line-height: 1.6;
-      color: #333;
-      background-color: #f8f9fa;
+      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      min-height: 100vh;
     }
     
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 1.5rem;
     }
     
     .header {
-      background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--accent-color) 100%);
       color: white;
-      padding: 2rem 0;
+      padding: 3rem 1.5rem;
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="1" stop-color="%23ffffff" stop-opacity="0"/></linearGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>');
+      pointer-events: none;
     }
     
     .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.025em;
+      position: relative;
+      z-index: 1;
     }
     
     .header p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2rem;
-    }
-    
-    .payment-form {
-      max-width: 500px;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      opacity: 0.95;
+      font-weight: 400;
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
       margin: 0 auto;
     }
     
+    .card {
+      background: var(--bg-primary);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-light);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+    
+    .payment-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .form-section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2rem;
+      text-align: center;
+      position: relative;
+      padding-bottom: 0.75rem;
+    }
+
+    .form-section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      border-radius: 2px;
+    }
+    
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
     }
     
     label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #2c3e50;
+      margin-bottom: 0.625rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.95rem;
     }
     
     input, select, textarea {
       width: 100%;
-      padding: 12px;
-      border: 2px solid #e1e8ed;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.3s ease;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background: var(--bg-primary);
+      color: var(--text-primary);
     }
     
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #0077B6;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      transform: translateY(-1px);
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: var(--border-medium);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
     }
     
     .btn {
-      background: linear-gradient(135deg, #0077B6 0%, #00B4D8 100%);
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
       color: white;
       border: none;
-      padding: 14px 28px;
-      border-radius: 8px;
-      font-size: 16px;
+      padding: 1rem 2rem;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       width: 100%;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.025em;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
     }
     
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 119, 182, 0.3);
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    }
+
+    .btn:active {
+      transform: translateY(0);
     }
     
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
+      background: var(--text-light);
+    }
+
+    .btn:disabled:hover {
+      transform: none;
+      box-shadow: none;
     }
     
     .price-display {
       text-align: center;
-      font-size: 2rem;
-      font-weight: bold;
-      color: #0077B6;
-      margin: 1rem 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 2rem 0;
+      letter-spacing: -0.025em;
     }
     
     .consultation-types {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
     }
     
     .consultation-card {
-      border: 2px solid #e1e8ed;
-      border-radius: 12px;
-      padding: 1.5rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
       cursor: pointer;
       transition: all 0.3s ease;
+      background: var(--bg-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .consultation-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+      transform-origin: left;
+    }
+    
+    .consultation-card:hover::before {
+      transform: scaleX(1);
     }
     
     .consultation-card:hover {
-      border-color: #0077B6;
+      border-color: var(--primary-color);
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0, 119, 182, 0.15);
+      box-shadow: var(--shadow-xl);
     }
     
     .consultation-card.selected {
-      border-color: #0077B6;
-      background-color: rgba(0, 119, 182, 0.05);
+      border-color: var(--primary-color);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(124, 58, 237, 0.05));
+      box-shadow: var(--shadow-lg);
+    }
+
+    .consultation-card.selected::before {
+      transform: scaleX(1);
     }
     
     .consultation-card h3 {
-      color: #0077B6;
-      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .consultation-card p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
     }
     
     .consultation-card .price {
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: #2c3e50;
-      margin-top: 1rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: auto;
     }
-    
-    .step-indicator {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 2rem;
+
+    .consultation-card .features {
+      list-style: none;
+      margin: 1rem 0;
     }
-    
-    .step {
-      padding: 8px 16px;
-      margin: 0 4px;
-      background: #e1e8ed;
-      border-radius: 20px;
-      font-size: 14px;
-      color: #666;
+
+    .consultation-card .features li {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      position: relative;
+      padding-left: 1.25rem;
+      font-size: 0.9rem;
     }
-    
-    .step.active {
-      background: #0077B6;
-      color: white;
-    }
-    
-    .step.completed {
-      background: #10b981;
-      color: white;
+
+    .consultation-card .features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--secondary-color);
+      font-weight: 600;
     }
     
     .loading {
       display: inline-block;
       width: 20px;
       height: 20px;
-      border: 3px solid rgba(255,255,255,.3);
+      border: 3px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: #fff;
       animation: spin 1s ease-in-out infinite;
+      margin-right: 0.5rem;
     }
     
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     
-    .error {
-      background: #fee;
-      border: 1px solid #fcc;
-      color: #c33;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+    .alert {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border-left: 4px solid;
+    }
+
+    .alert.error {
+      background: #fef2f2;
+      border-left-color: #ef4444;
+      color: #991b1b;
     }
     
-    .success {
-      background: #efe;
-      border: 1px solid #cfc;
-      color: #363;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+    .alert.success {
+      background: #f0fdf4;
+      border-left-color: #22c55e;
+      color: #166534;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { 
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
+    /* Enhanced Mobile Responsiveness */
     @media (max-width: 768px) {
       .container {
-        padding: 10px;
+        padding: 1rem;
       }
       
-      .header h1 {
-        font-size: 2rem;
+      .header {
+        padding: 2rem 1rem;
+        margin-bottom: 2rem;
       }
       
       .card {
         padding: 1.5rem;
+        border-radius: var(--radius-lg);
       }
       
       .consultation-types {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .consultation-card {
+        padding: 1.5rem;
+      }
+
+      .price-display {
+        font-size: 2rem;
+        margin: 1.5rem 0;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      input, select, textarea {
+        padding: 0.75rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        padding: 1.5rem 0.75rem;
+      }
+
+      .card {
+        padding: 1.25rem;
+      }
+
+      .consultation-card {
+        padding: 1.25rem;
+      }
+
+      .btn {
+        padding: 0.875rem 1.5rem;
+      }
+    }
+
+    /* Focus styles for accessibility */
+    .consultation-card:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.5);
+      outline-offset: 2px;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.5);
+      outline-offset: 2px;
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      :root {
+        --border-light: #666;
+        --border-medium: #333;
+      }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
     </style>
@@ -233,54 +486,79 @@
     <div class="container">
       <div class="card">
         <div class="payment-form">
-          <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">Book Your Consultation</h2>
+          <h2 class="form-section-title">Book Your Consultation</h2>
           
           <div class="consultation-types">
-            <div class="consultation-card" onclick="selectConsultation('basic', 50)">
+            <div class="consultation-card" onclick="selectConsultation('basic', 50)" tabindex="0" role="button" aria-label="Select Basic Consultation for €50">
               <h3>Basic Consultation</h3>
               <p>Initial assessment and guidance for your immigration journey.</p>
+              <ul class="features">
+                <li>30-minute consultation</li>
+                <li>Document review checklist</li>
+                <li>Basic pathway guidance</li>
+                <li>Email follow-up summary</li>
+              </ul>
               <div class="price">€50</div>
             </div>
             
-            <div class="consultation-card" onclick="selectConsultation('premium', 120)">
+            <div class="consultation-card" onclick="selectConsultation('premium', 120)" tabindex="0" role="button" aria-label="Select Premium Consultation for €120">
               <h3>Premium Consultation</h3>
               <p>Comprehensive review with document preparation assistance.</p>
+              <ul class="features">
+                <li>60-minute detailed consultation</li>
+                <li>Complete document review</li>
+                <li>Application strategy plan</li>
+                <li>Timeline & milestone guidance</li>
+                <li>Priority email support</li>
+              </ul>
               <div class="price">€120</div>
             </div>
             
-            <div class="consultation-card" onclick="selectConsultation('enterprise', 200)">
+            <div class="consultation-card" onclick="selectConsultation('enterprise', 200)" tabindex="0" role="button" aria-label="Select Enterprise Consultation for €200">
               <h3>Enterprise Consultation</h3>
               <p>Complete immigration package with ongoing support.</p>
+              <ul class="features">
+                <li>90-minute comprehensive session</li>
+                <li>Full document preparation</li>
+                <li>Application submission help</li>
+                <li>3-month ongoing support</li>
+                <li>Phone & email assistance</li>
+                <li>Status tracking updates</li>
+              </ul>
               <div class="price">€200</div>
             </div>
           </div>
 
-          <div id="selected-consultation" style="display: none;">
+          <div id="selected-consultation" style="display: none;" class="fade-in">
             <div class="price-display" id="price-display">€0</div>
             
             <div class="form-group">
-              <label for="name">Full Name</label>
-              <input type="text" id="name" required>
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" required placeholder="Enter your full name" aria-describedby="name-help">
             </div>
             
             <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" required>
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" required placeholder="your.email@example.com" aria-describedby="email-help">
             </div>
             
             <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" required>
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" required placeholder="+49 123 456 7890" aria-describedby="phone-help">
             </div>
             
             <div class="form-group">
               <label for="message">Brief Description of Your Needs</label>
-              <textarea id="message" rows="4" placeholder="Tell us about your immigration goals..."></textarea>
+              <textarea id="message" rows="4" placeholder="Tell us about your immigration goals, current situation, and any specific questions you have..."></textarea>
             </div>
             
-            <button class="btn" onclick="processPayment()" id="payment-btn">
-              Proceed to Payment
+            <button class="btn" onclick="processPayment()" id="payment-btn" aria-describedby="payment-info">
+              <span id="btn-text">Proceed to Secure Payment</span>
             </button>
+            
+            <p id="payment-info" style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+              🔒 Secure payment processing powered by Stripe
+            </p>
           </div>
         </div>
       </div>
@@ -329,7 +607,8 @@
         }
 
         const paymentBtn = document.getElementById('payment-btn');
-        paymentBtn.innerHTML = '<span class="loading"></span> Processing...';
+        const btnText = document.getElementById('btn-text');
+        btnText.innerHTML = '<span class="loading"></span> Processing...';
         paymentBtn.disabled = true;
 
         try {
@@ -390,10 +669,54 @@
           console.error('Payment error:', error);
           alert('Payment failed: ' + error.message);
         } finally {
-          paymentBtn.innerHTML = 'Proceed to Payment';
+          btnText.innerHTML = 'Proceed to Secure Payment';
           paymentBtn.disabled = false;
         }
       }
+
+      // Add keyboard support for consultation cards
+      document.querySelectorAll('.consultation-card').forEach(card => {
+        card.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            card.click();
+          }
+        });
+      });
+
+      // Enhance form validation
+      function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      }
+
+      function validatePhone(phone) {
+        const re = /^[\+]?[0-9\s\-\(\)]{7,}$/;
+        return re.test(phone);
+      }
+
+      // Add real-time validation
+      document.getElementById('email').addEventListener('blur', function() {
+        const email = this.value;
+        if (email && !validateEmail(email)) {
+          this.style.borderColor = '#ef4444';
+          this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+        } else {
+          this.style.borderColor = '';
+          this.style.boxShadow = '';
+        }
+      });
+
+      document.getElementById('phone').addEventListener('blur', function() {
+        const phone = this.value;
+        if (phone && !validatePhone(phone)) {
+          this.style.borderColor = '#ef4444';
+          this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+        } else {
+          this.style.borderColor = '';
+          this.style.boxShadow = '';
+        }
+      });
 
       // Test the API endpoint on load
       fetch('/api/health')

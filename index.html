@@ -52,6 +52,8 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 1.5rem;
+      width: 100%;
+      min-height: 100vh;
     }
     
     .header {
@@ -103,7 +105,9 @@
       margin-bottom: 2rem;
       border: 1px solid var(--border-light);
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      width: 100%;
+      min-height: auto;
     }
 
     .card::before {
@@ -253,6 +257,8 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
       margin-bottom: 3rem;
+      width: 100%;
+      min-height: auto;
     }
     
     .consultation-card {
@@ -409,6 +415,7 @@
       .consultation-types {
         grid-template-columns: 1fr;
         gap: 1rem;
+        margin-bottom: 2rem;
       }
 
       .consultation-card {

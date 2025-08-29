@@ -14,18 +14,10 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/webhooks/(.*)",
-      "dest": "/api/webhooks/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/webhooks/(.*)",
+      "destination": "/api/webhooks/$1"
     }
   ],
   "headers": [

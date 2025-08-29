@@ -83,7 +83,6 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "regions": ["fra1", "lhr1", "iad1"],
   "cleanUrls": true,
   "trailingSlash": false
 }
